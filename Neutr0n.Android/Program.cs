@@ -22,7 +22,7 @@ namespace Neutr0n.Android
         , Icon = "@drawable/icon"
         , Theme = "@style/Theme.Splash"
         , AlwaysRetainTaskState = true
-        //, LaunchMode = Android.Content.PM.LaunchMode.SingleInstance
+        , LaunchMode = global::Android.Content.PM.LaunchMode.SingleInstance
         , ScreenOrientation = ScreenOrientation.SensorLandscape
         , ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden)]
     public class Program : AndroidGameActivity
