@@ -12,16 +12,20 @@ namespace Neutr0n
         CCLabel label;
         CCSprite paddleSprite, ballSprite;
 
-        public IntroLayer() : base(CCColor4B.Blue)
+        public IntroLayer() : base(CCColor4B.Black)
         {
-
-            // create and initialize a Label
-            label = new CCLabel("Hello Hatehim", "fonts/MarkerFelt", 22, CCLabelFormat.SpriteFont);
-
-            // add the label as a child to this Layer
+            label = new CCLabel("Hello Hatehim10", "fonts/MarkerFelt", 22, CCLabelFormat.SpriteFont);
             AddChild(label);
 
-            paddleSprite = new CCSprite();
+            paddleSprite = new CCSprite("paddle");
+            paddleSprite.PositionX = 100;
+            paddleSprite.PositionY = 100;
+            AddChild(paddleSprite);
+
+            ballSprite = new CCSprite("ball");
+            ballSprite.PositionX = 640;
+            ballSprite.PositionY = 320;
+            AddChild(ballSprite);
         }
 
         protected override void AddedToScene()
@@ -36,15 +40,55 @@ namespace Neutr0n
 
             // Register for touch events
             var touchListener = new CCEventListenerTouchAllAtOnce();
-            touchListener.OnTouchesEnded = OnTouchesEnded;
+            touchListener.OnTouchesBegan = OnTouchesMoved;
+            touchListener.OnTouchesMoved = OnTouchesMoved;
             AddEventListener(touchListener, this);
         }
 
-        void OnTouchesEnded(List<CCTouch> touches, CCEvent touchEvent)
+        void OnTouchesMoved(List<CCTouch> touches, CCEvent touchEvent)
         {
             if (touches.Count > 0)
             {
-                // Perform touch handling here
+                paddleSprite.RunAction(new CCMoveTo(.1f, new CCPoint(touches[0].Location.X, paddleSprite.PositionY)));
+            }
+        }
+
+        float ballXVelocity;
+        float ballYVelocity;
+
+        const float gravity = 140;
+
+        int score = 0;
+
+        public void RunGameLogic(float frameTimeInSeconds)
+        {
+            ballYVelocity += frameTimeInSeconds * -gravity;
+
+            ballSprite.PositionX += ballXVelocity * frameTimeInSeconds;
+            ballSprite.PositionY += ballYVelocity * frameTimeInSeconds;
+
+            //Check if overlap
+            bool doesBallOverlapPaddle = ballSprite.BoundingBoxTransformedToParent.IntersectsRect(paddleSprite.BoundingBoxTransformedToParent);
+            bool isMovingDownward = ballYVelocity < 0;
+            if (doesBallOverlapPaddle && isMovingDownward)
+            {
+                ballYVelocity *= -1;
+
+                const float minXVelocity = -300;
+                const float maxXVelocity = 300;
+                ballXVelocity = CCRandom.GetRandomFloat(minXVelocity, maxXVelocity);
+            }
+
+            float ballRight = ballSprite.BoundingBoxTransformedToParent.MaxX;
+            float ballLeft = ballSprite.BoundingBoxTransformedToParent.MinX;
+
+            float screenRight = VisibleBoundsWorldspace.MaxX;
+            float screenLeft = VisibleBoundsWorldspace.MinX;
+
+            bool shouldReflectXVelocity = (ballRight > screenRight && ballXVelocity > 0) || (ballLeft < screenLeft && ballXVelocity < 0);
+            if (shouldReflectXVelocity)
+            {
+                ballXVelocity *= -1;
             }
         }
     }
