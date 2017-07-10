@@ -12,16 +12,17 @@ using Uri = Android.Net.Uri;
 using Microsoft.Xna.Framework;
 
 using CocosSharp;
+using Neutr0n.Shared;
 
 namespace Neutr0n.Android
 {
 
-    [Activity(Label = "Neutr0n"
+    [Activity(Label = "Neutr0n.Android"
         , MainLauncher = true
         , Icon = "@drawable/icon"
         , Theme = "@style/Theme.Splash"
         , AlwaysRetainTaskState = true
-        , LaunchMode = Android.Content.PM.LaunchMode.SingleInstance
+        //, LaunchMode = Android.Content.PM.LaunchMode.SingleInstance
         , ScreenOrientation = ScreenOrientation.SensorLandscape
         , ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden)]
     public class Program : AndroidGameActivity

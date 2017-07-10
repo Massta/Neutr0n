@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using CocosSharp;
 using CocosDenshion;
 
-namespace Neutr0n
+namespace Neutr0n.Shared
 {
     public class AppDelegate : CCApplicationDelegate
     {

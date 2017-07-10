@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CocosSharp;
 using Microsoft.Xna.Framework;
 
-namespace Neutr0n
+namespace Neutr0n.Shared
 {
     public class IntroLayer : CCLayerColor
     {
@@ -103,12 +103,13 @@ namespace Neutr0n
                 ballXVelocity *= -1;
             }
 
-            if (ballSprite.PositionY > VisibleBoundsWorldspace.MaxY)
+            if (ballSprite.PositionY < VisibleBoundsWorldspace.MinY)
             {
                 ballSprite.PositionX = 640;
                 ballSprite.PositionY = 320;
 
-                ballYVelocity *= -1;
+                ballXVelocity = 0;
+                ballYVelocity = 0;
                 score = 0;
                 label.Text = "Score: 0";
             }

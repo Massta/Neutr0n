@@ -3,9 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neutr0n", "Neutr0n\Neutr0n.csproj", "{E3BA8186-FE45-494A-BD79-8673A361857A}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Neutr0n.Shared", "Neutr0n.Shared\Neutr0n.Shared.shproj", "{A070285B-A845-48CE-A3DD-55C9E2A912C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neutr0n.Android", "Neutr0n.Android\Neutr0n.Android.csproj", "{E3BA8186-FE45-494A-BD79-8673A361857A}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Neutr0n.Shared\Neutr0n.Shared.projitems*{a070285b-a845-48ce-a3dd-55c9e2a912c3}*SharedItemsImports = 13
+		Neutr0n.Shared\Neutr0n.Shared.projitems*{e3ba8186-fe45-494a-bd79-8673a361857a}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
