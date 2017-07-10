@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CocosSharp;
 using Microsoft.Xna.Framework;
+using Neutr0n.Shared.Models;
 
 namespace Neutr0n.Shared
 {
@@ -10,7 +11,8 @@ namespace Neutr0n.Shared
 
         // Define a label variable
         CCLabel label;
-        CCSprite paddleSprite, ballSprite;
+        CCSprite paddleSprite;
+        Box box;
 
         public IntroLayer() : base(CCColor4B.Black)
         {
@@ -22,10 +24,12 @@ namespace Neutr0n.Shared
             paddleSprite.PositionY = 100;
             AddChild(paddleSprite);
 
-            ballSprite = new CCSprite("ball");
-            ballSprite.PositionX = 640;
-            ballSprite.PositionY = 320;
-            AddChild(ballSprite);
+            box = new Box();
+            box.PositionX = 640;
+            box.PositionY = 320;
+            box.Width = 32;
+            box.Height = 32;
+            AddChild(box);
         }
 
         protected override void AddedToScene()
@@ -71,13 +75,14 @@ namespace Neutr0n.Shared
 
         public void RunGameLogic(float frameTimeInSeconds)
         {
+            box.Draw();
             ballYVelocity += frameTimeInSeconds * -gravity;
 
-            ballSprite.PositionX += ballXVelocity * frameTimeInSeconds;
-            ballSprite.PositionY += ballYVelocity * frameTimeInSeconds;
+            box.PositionX += ballXVelocity * frameTimeInSeconds;
+            box.PositionY += ballYVelocity * frameTimeInSeconds;
 
             //Check if overlap
-            bool doesBallOverlapPaddle = ballSprite.BoundingBoxTransformedToParent.IntersectsRect(paddleSprite.BoundingBoxTransformedToParent);
+            bool doesBallOverlapPaddle = box.BoundingBoxTransformedToParent.IntersectsRect(paddleSprite.BoundingBoxTransformedToParent);
             bool isMovingDownward = ballYVelocity < 0;
             if (doesBallOverlapPaddle && isMovingDownward)
             {
@@ -91,8 +96,8 @@ namespace Neutr0n.Shared
                 label.Text = string.Format("Score: {0}", score);
             }
 
-            float ballRight = ballSprite.BoundingBoxTransformedToParent.MaxX;
-            float ballLeft = ballSprite.BoundingBoxTransformedToParent.MinX;
+            float ballRight = box.BoundingBoxTransformedToParent.MaxX;
+            float ballLeft = box.BoundingBoxTransformedToParent.MinX;
 
             float screenRight = VisibleBoundsWorldspace.MaxX;
             float screenLeft = VisibleBoundsWorldspace.MinX;
@@ -103,10 +108,10 @@ namespace Neutr0n.Shared
                 ballXVelocity *= -1;
             }
 
-            if (ballSprite.PositionY < VisibleBoundsWorldspace.MinY)
+            if (box.PositionY < VisibleBoundsWorldspace.MinY)
             {
-                ballSprite.PositionX = 640;
-                ballSprite.PositionY = 320;
+                box.PositionX = 640;
+                box.PositionY = 320;
 
                 ballXVelocity = 0;
                 ballYVelocity = 0;

@@ -9,7 +9,9 @@
     <Import_RootNamespace>Neutr0n.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Models\AppDelegate.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\IntroLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AppDelegate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IntroLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Box.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\GameItem.cs" />
   </ItemGroup>
 </Project>
