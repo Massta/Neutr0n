@@ -40,16 +40,25 @@ namespace Neutr0n
 
             // Register for touch events
             var touchListener = new CCEventListenerTouchAllAtOnce();
-            touchListener.OnTouchesBegan = OnTouchesMoved;
+            touchListener.OnTouchesBegan = OnTouchesBegan;
             touchListener.OnTouchesMoved = OnTouchesMoved;
             AddEventListener(touchListener, this);
+            Schedule(RunGameLogic);
+        }
+
+        void OnTouchesBegan(List<CCTouch> touches, CCEvent touchEvent)
+        {
+            if (touches.Count > 0)
+            {
+                paddleSprite.RunAction(new CCMoveTo(.1f, new CCPoint(touches[0].Location.X, paddleSprite.PositionY)));
+            }
         }
 
         void OnTouchesMoved(List<CCTouch> touches, CCEvent touchEvent)
         {
             if (touches.Count > 0)
             {
-                paddleSprite.RunAction(new CCMoveTo(.1f, new CCPoint(touches[0].Location.X, paddleSprite.PositionY)));
+                paddleSprite.PositionX = touches[0].Location.X;
             }
         }
 
@@ -77,6 +86,9 @@ namespace Neutr0n
                 const float minXVelocity = -300;
                 const float maxXVelocity = 300;
                 ballXVelocity = CCRandom.GetRandomFloat(minXVelocity, maxXVelocity);
+
+                score++;
+                label.Text = string.Format("Score: {0}", score);
             }
 
             float ballRight = ballSprite.BoundingBoxTransformedToParent.MaxX;
@@ -89,6 +101,16 @@ namespace Neutr0n
             if (shouldReflectXVelocity)
             {
                 ballXVelocity *= -1;
+            }
+
+            if (ballSprite.PositionY > VisibleBoundsWorldspace.MaxY)
+            {
+                ballSprite.PositionX = 640;
+                ballSprite.PositionY = 320;
+
+                ballYVelocity *= -1;
+                score = 0;
+                label.Text = "Score: 0";
             }
         }
     }
