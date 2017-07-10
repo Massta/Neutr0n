@@ -10,16 +10,18 @@ namespace Neutr0n
 
         // Define a label variable
         CCLabel label;
+        CCSprite paddleSprite, ballSprite;
 
         public IntroLayer() : base(CCColor4B.Blue)
         {
 
             // create and initialize a Label
-            label = new CCLabel("Hello CocosSharp", "fonts/MarkerFelt", 22, CCLabelFormat.SpriteFont);
+            label = new CCLabel("Hello Hatehim", "fonts/MarkerFelt", 22, CCLabelFormat.SpriteFont);
 
             // add the label as a child to this Layer
             AddChild(label);
 
+            paddleSprite = new CCSprite();
         }
 
         protected override void AddedToScene()
