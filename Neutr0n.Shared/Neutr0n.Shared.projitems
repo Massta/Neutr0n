@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AppDelegate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IntroLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AIBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Box.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\GameItem.cs" />
   </ItemGroup>
