@@ -10,8 +10,8 @@ namespace Neutr0n.Shared.Models
         public int Counter { get; set; }
         public void Draw()
         {
-            DrawRect(new CCRect(PositionX, PositionY, Width, Height), CCColor4B.Blue);
-            DrawString((int)(PositionX + 10), (int)(PositionY + 10), "{0}", Counter);
+            DrawRect(new CCRect(0, 0, Width, Height), CCColor4B.Blue);
+            DrawRect(new CCRect(5, 5, Width-10, Height-10), CCColor4B.Black);
         }
     }
 }

@@ -8,16 +8,10 @@ namespace Neutr0n.Shared
 {
     public class IntroLayer : CCLayerColor
     {
-
-        // Define a label variable
-        CCDrawNode player;
+        Box player;
 
         public IntroLayer() : base(CCColor4B.Black)
         {
-            player = new CCDrawNode { PositionX = VisibleBoundsWorldspace.MidX-64, PositionY = VisibleBoundsWorldspace.MidY-64 };
-            AddChild(player);
-            player.DrawRect(new CCRect(PositionX, PositionY, 128, 128), CCColor4B.Blue);
-            player.DrawString((int)(PositionX + 10), (int)(PositionY + 10), "{0}", 10);
         }
 
         protected override void AddedToScene()
@@ -26,6 +20,15 @@ namespace Neutr0n.Shared
 
             // Use the bounds to layout the positioning of our drawable assets
             var bounds = VisibleBoundsWorldspace;
+            player = new Box
+            {
+                PositionX = VisibleBoundsWorldspace.MidX - 50,
+                PositionY = VisibleBoundsWorldspace.MidY - 50,
+                Width = 100,
+                Height = 100
+            };
+            AddChild(player);
+            player.Draw();
 
             // Register for touch events
             var touchListener = new CCEventListenerTouchAllAtOnce();
