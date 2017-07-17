@@ -9,11 +9,12 @@ namespace Neutr0n.Shared
 {
     public class IntroLayer : CCLayerColor
     {
-        public const int MAX_ENEMIES = 15;
+        public const int MAX_ENEMIES = 10;
 
         Box Player;
         MoveDirection PlayerMoveDirection;
         int PlayerSpeed;
+        bool PlayerIsMoving;
 
         List<AIBox> Enemies;
 
@@ -40,7 +41,8 @@ namespace Neutr0n.Shared
             Player.Draw();
 
             PlayerMoveDirection = MoveDirection.MidMid;
-            PlayerSpeed = 5;
+            PlayerSpeed = 4;
+            PlayerIsMoving = false;
 
             Enemies = new List<AIBox>();
 
@@ -55,12 +57,14 @@ namespace Neutr0n.Shared
         void OnTouchesEnded(List<CCTouch> touches, CCEvent touchEvent)
         {
             PlayerMoveDirection = MoveDirection.MidMid;
+            PlayerIsMoving = false;
         }
 
         void OnTouchesBegan(List<CCTouch> touches, CCEvent touchEvent)
         {
             if (touches.Count > 0)
             {
+                bool touchesAnything = false;
                 #region Touchregion calculation
 
                 float xSize = VisibleBoundsWorldspace.MidX / 3;
@@ -122,39 +126,49 @@ namespace Neutr0n.Shared
                 if (bottomLeft.ContainsPoint(touches[0].Location))
                 {
                     PlayerMoveDirection = MoveDirection.BottomLeft;
+                    touchesAnything = true;
                 }
                 if (bottomMid.ContainsPoint(touches[0].Location))
                 {
                     PlayerMoveDirection = MoveDirection.BottomMid;
+                    touchesAnything = true;
                 }
                 if (bottomRight.ContainsPoint(touches[0].Location))
                 {
                     PlayerMoveDirection = MoveDirection.BottomRight;
+                    touchesAnything = true;
                 }
 
                 //Middle Row
                 if (midLeft.ContainsPoint(touches[0].Location))
                 {
                     PlayerMoveDirection = MoveDirection.MidLeft;
+                    touchesAnything = true;
                 }
                 if (midRight.ContainsPoint(touches[0].Location))
                 {
                     PlayerMoveDirection = MoveDirection.MidRight;
+                    touchesAnything = true;
                 }
 
                 //Right Row
                 if (topLeft.ContainsPoint(touches[0].Location))
                 {
                     PlayerMoveDirection = MoveDirection.TopLeft;
+                    touchesAnything = true;
                 }
                 if (topMid.ContainsPoint(touches[0].Location))
                 {
                     PlayerMoveDirection = MoveDirection.TopMid;
+                    touchesAnything = true;
                 }
                 if (topRight.ContainsPoint(touches[0].Location))
                 {
                     PlayerMoveDirection = MoveDirection.TopRight;
+                    touchesAnything = true;
                 }
+
+                PlayerIsMoving = touchesAnything;
 
                 #endregion
             }
@@ -163,41 +177,43 @@ namespace Neutr0n.Shared
         public void RunGameLogic(float frameTimeInSeconds)
         {
             #region Player movement
-
-            switch (PlayerMoveDirection)
+            if (PlayerIsMoving)
             {
-                case MoveDirection.BottomLeft:
-                    Player.PositionX -= PlayerSpeed;
-                    Player.PositionY -= PlayerSpeed;
-                    break;
-                case MoveDirection.BottomMid:
-                    Player.PositionY -= PlayerSpeed;
-                    break;
-                case MoveDirection.BottomRight:
-                    Player.PositionX += PlayerSpeed;
-                    Player.PositionY -= PlayerSpeed;
-                    break;
-                case MoveDirection.MidLeft:
-                    Player.PositionX -= PlayerSpeed;
-                    break;
-                case MoveDirection.MidMid:
-                    Player.PositionX -= 0;
-                    Player.PositionY -= 0;
-                    break;
-                case MoveDirection.MidRight:
-                    Player.PositionX += PlayerSpeed;
-                    break;
-                case MoveDirection.TopLeft:
-                    Player.PositionX -= PlayerSpeed;
-                    Player.PositionY += PlayerSpeed;
-                    break;
-                case MoveDirection.TopMid:
-                    Player.PositionY += PlayerSpeed;
-                    break;
-                case MoveDirection.TopRight:
-                    Player.PositionX += PlayerSpeed;
-                    Player.PositionY += PlayerSpeed;
-                    break;
+                switch (PlayerMoveDirection)
+                {
+                    case MoveDirection.BottomLeft:
+                        Player.PositionX -= PlayerSpeed;
+                        Player.PositionY -= PlayerSpeed;
+                        break;
+                    case MoveDirection.BottomMid:
+                        Player.PositionY -= PlayerSpeed;
+                        break;
+                    case MoveDirection.BottomRight:
+                        Player.PositionX += PlayerSpeed;
+                        Player.PositionY -= PlayerSpeed;
+                        break;
+                    case MoveDirection.MidLeft:
+                        Player.PositionX -= PlayerSpeed;
+                        break;
+                    case MoveDirection.MidMid:
+                        Player.PositionX -= 0;
+                        Player.PositionY -= 0;
+                        break;
+                    case MoveDirection.MidRight:
+                        Player.PositionX += PlayerSpeed;
+                        break;
+                    case MoveDirection.TopLeft:
+                        Player.PositionX -= PlayerSpeed;
+                        Player.PositionY += PlayerSpeed;
+                        break;
+                    case MoveDirection.TopMid:
+                        Player.PositionY += PlayerSpeed;
+                        break;
+                    case MoveDirection.TopRight:
+                        Player.PositionX += PlayerSpeed;
+                        Player.PositionY += PlayerSpeed;
+                        break;
+                }
             }
 
             #endregion
