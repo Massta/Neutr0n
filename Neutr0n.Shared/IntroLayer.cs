@@ -68,7 +68,7 @@ namespace Neutr0n.Shared
                 bool touchesAnything = false;
                 #region Touchregion calculation
 
-                float xSize = VisibleBoundsWorldspace.MidX / 3;
+                float xSize = 80; //VisibleBoundsWorldspace.MidX / 3;
                 float ySize = xSize;
                 //Bottom row
                 CCRect bottomLeft = new CCRect

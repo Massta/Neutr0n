@@ -13,7 +13,7 @@ namespace Neutr0n.Shared
             application.ContentRootDirectory = "Content";
             var windowSize = mainWindow.WindowSizeInPixels;
 
-            var desiredWidth = 1024.0f;
+            var desiredWidth = 1280.0f;
             var desiredHeight = 768.0f;
 
             // This will set the world bounds to be (0,0, w, h)
