@@ -24,6 +24,7 @@ namespace Neutr0n.Shared
 
             // Use the bounds to layout the positioning of our drawable assets
             var bounds = VisibleBoundsWorldspace;
+
             Player = new Box
             {
                 PositionX = VisibleBoundsWorldspace.MidX - 50,
