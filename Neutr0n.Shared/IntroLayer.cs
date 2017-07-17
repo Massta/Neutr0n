@@ -179,41 +179,7 @@ namespace Neutr0n.Shared
             #region Player movement
             if (PlayerIsMoving)
             {
-                switch (PlayerMoveDirection)
-                {
-                    case MoveDirection.BottomLeft:
-                        Player.PositionX -= PlayerSpeed;
-                        Player.PositionY -= PlayerSpeed;
-                        break;
-                    case MoveDirection.BottomMid:
-                        Player.PositionY -= PlayerSpeed;
-                        break;
-                    case MoveDirection.BottomRight:
-                        Player.PositionX += PlayerSpeed;
-                        Player.PositionY -= PlayerSpeed;
-                        break;
-                    case MoveDirection.MidLeft:
-                        Player.PositionX -= PlayerSpeed;
-                        break;
-                    case MoveDirection.MidMid:
-                        Player.PositionX -= 0;
-                        Player.PositionY -= 0;
-                        break;
-                    case MoveDirection.MidRight:
-                        Player.PositionX += PlayerSpeed;
-                        break;
-                    case MoveDirection.TopLeft:
-                        Player.PositionX -= PlayerSpeed;
-                        Player.PositionY += PlayerSpeed;
-                        break;
-                    case MoveDirection.TopMid:
-                        Player.PositionY += PlayerSpeed;
-                        break;
-                    case MoveDirection.TopRight:
-                        Player.PositionX += PlayerSpeed;
-                        Player.PositionY += PlayerSpeed;
-                        break;
-                }
+                Player.Position = TranslatePosition(Player.Position, Player.Width, PlayerMoveDirection, PlayerSpeed);
             }
 
             #endregion
@@ -293,6 +259,83 @@ namespace Neutr0n.Shared
                                             || v.PositionX < VisibleBoundsWorldspace.MinX - 100
                                             || v.PositionY > VisibleBoundsWorldspace.MaxY + 100
                                             || v.PositionY < VisibleBoundsWorldspace.MinY - 100);
+        }
+
+        private CCPoint TranslatePosition(CCPoint startPosition, float playerWidth, MoveDirection direction, int speed)
+        {
+            switch (direction)
+            {
+                case MoveDirection.BottomLeft:
+                    if (startPosition.X >= VisibleBoundsWorldspace.MinX)
+                    {
+                        startPosition.X -= speed;
+                    }
+                    if (startPosition.Y >= VisibleBoundsWorldspace.MinY)
+                    {
+                        startPosition.Y -= speed;
+                    }
+                    break;
+                case MoveDirection.BottomMid:
+                    if (startPosition.Y >= VisibleBoundsWorldspace.MinY)
+                    {
+                        startPosition.Y -= speed;
+                    }
+                    break;
+                case MoveDirection.BottomRight:
+                    if (startPosition.X+playerWidth <= VisibleBoundsWorldspace.MaxX)
+                    {
+                        startPosition.X += speed;
+                    }
+                    if (startPosition.Y >= VisibleBoundsWorldspace.MinY)
+                    {
+                        startPosition.Y -= speed;
+                    }
+                    break;
+                case MoveDirection.MidLeft:
+                    if (startPosition.X >= VisibleBoundsWorldspace.MinX)
+                    {
+                        startPosition.X -= speed;
+                    }
+                    break;
+                case MoveDirection.MidMid:
+                    startPosition.X -= 0;
+                    startPosition.Y -= 0;
+                    break;
+                case MoveDirection.MidRight:
+                    if (startPosition.X + playerWidth <= VisibleBoundsWorldspace.MaxX)
+                    {
+                        startPosition.X += speed;
+                    }
+                    break;
+                case MoveDirection.TopLeft:
+                    if (startPosition.X >= VisibleBoundsWorldspace.MinX)
+                    {
+                        startPosition.X -= speed;
+                    }
+                    if (startPosition.Y + playerWidth <= VisibleBoundsWorldspace.MaxY)
+                    {
+                        startPosition.Y += speed;
+                    }
+                    break;
+                case MoveDirection.TopMid:
+                    if (startPosition.Y + playerWidth <= VisibleBoundsWorldspace.MaxY)
+                    {
+                        startPosition.Y += speed;
+                    }
+                    break;
+                case MoveDirection.TopRight:
+                    if (startPosition.X + playerWidth <= VisibleBoundsWorldspace.MaxX)
+                    {
+                        startPosition.X += speed;
+                    }
+                    if (startPosition.Y + playerWidth <= VisibleBoundsWorldspace.MaxY)
+                    {
+                        startPosition.Y += speed;
+                    }
+                    break;
+            }
+
+            return startPosition;
         }
     }
 }
