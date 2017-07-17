@@ -8,5 +8,6 @@ namespace Neutr0n.Shared.Models
     {
         public float VelocityX { get; set; }
         public float VelocityY { get; set; }
+        public bool Dead { get; set; }
     }
 }

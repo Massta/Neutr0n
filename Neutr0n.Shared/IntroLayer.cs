@@ -35,7 +35,8 @@ namespace Neutr0n.Shared
                 PositionY = VisibleBoundsWorldspace.MidY - 50,
                 Width = 100,
                 Height = 100,
-                BoxColor = CCColor4B.Blue
+                BoxColor = CCColor4B.Blue,
+                Counter = 1
             };
             AddChild(Player);
             Player.Draw();
@@ -186,7 +187,7 @@ namespace Neutr0n.Shared
 
             if (CCRandom.GetRandomInt(0, 100) < (100 - (Enemies.Count * 10)))
             {
-                int newCount = CCRandom.GetRandomInt(Math.Max(1, Player.Counter - 100), Player.Counter + 100);
+                int newCount = CCRandom.GetRandomInt(Math.Max(1, Player.Counter - 100), Player.Counter + 10);
                 int direction = CCRandom.GetRandomInt(0, 3);
                 float newVelocityX = 0;
                 float newVelocityY = 0;
@@ -196,7 +197,7 @@ namespace Neutr0n.Shared
                 {
                     case 0:
                         //left to right
-                        newVelocityX = CCRandom.GetRandomInt(3, 7);
+                        newVelocityX = CCRandom.GetRandomInt(1, 6);
                         newVelocityY = 0;
                         newPositionX = VisibleBoundsWorldspace.MinX - 80;
                         newPositionY = CCRandom.GetRandomFloat(VisibleBoundsWorldspace.MinY, VisibleBoundsWorldspace.MaxY);
@@ -204,13 +205,13 @@ namespace Neutr0n.Shared
                     case 1:
                         //top to bottom
                         newVelocityX = 0;
-                        newVelocityY = CCRandom.GetRandomInt(3, 7);
+                        newVelocityY = CCRandom.GetRandomInt(1, 6);
                         newPositionX = CCRandom.GetRandomFloat(VisibleBoundsWorldspace.MinX, VisibleBoundsWorldspace.MaxX);
                         newPositionY = VisibleBoundsWorldspace.MinY - 80;
                         break;
                     case 2:
                         //right to left
-                        newVelocityX = -CCRandom.GetRandomInt(3, 7);
+                        newVelocityX = -CCRandom.GetRandomInt(1, 6);
                         newVelocityY = 0;
                         newPositionX = VisibleBoundsWorldspace.MaxX + 80;
                         newPositionY = CCRandom.GetRandomFloat(VisibleBoundsWorldspace.MinY, VisibleBoundsWorldspace.MaxY);
@@ -218,7 +219,7 @@ namespace Neutr0n.Shared
                     case 3:
                         //bottom to top
                         newVelocityX = 0;
-                        newVelocityY = -CCRandom.GetRandomInt(3, 7);
+                        newVelocityY = -CCRandom.GetRandomInt(1, 6);
                         newPositionX = CCRandom.GetRandomFloat(VisibleBoundsWorldspace.MinX, VisibleBoundsWorldspace.MaxX);
                         newPositionY = VisibleBoundsWorldspace.MaxY + 80;
                         break;
@@ -244,13 +245,28 @@ namespace Neutr0n.Shared
                 enemy.PositionX = enemy.PositionX += enemy.VelocityX;
                 enemy.PositionY = enemy.PositionY += enemy.VelocityY;
                 //If enemy hits box, start collision event
+                if (Player.BoundingBox.IntersectsRect(enemy.BoundingBox))
+                {
+                    if(Player.Counter >= enemy.Counter)
+                    {
+                        //Eats enemy
+                        Player.Counter += enemy.Counter;
+                    }
+                    else
+                    {
+                        //Dead
+                        Player.Counter = 1;
+                    }
+                    enemy.Dead = true;
+                }
             }
 
             //If enemy is out of bounds, remove it
             var toRemove = Enemies.Where(v => v.PositionX > VisibleBoundsWorldspace.MaxX + 100
                                             || v.PositionX < VisibleBoundsWorldspace.MinX - 100
                                             || v.PositionY > VisibleBoundsWorldspace.MaxY + 100
-                                            || v.PositionY < VisibleBoundsWorldspace.MinY - 100);
+                                            || v.PositionY < VisibleBoundsWorldspace.MinY - 100
+                                            || v.Dead);
             foreach (var removeEnemy in toRemove)
             {
                 RemoveChild(removeEnemy);
@@ -258,7 +274,8 @@ namespace Neutr0n.Shared
             Enemies.RemoveAll(v => v.PositionX > VisibleBoundsWorldspace.MaxX + 100
                                             || v.PositionX < VisibleBoundsWorldspace.MinX - 100
                                             || v.PositionY > VisibleBoundsWorldspace.MaxY + 100
-                                            || v.PositionY < VisibleBoundsWorldspace.MinY - 100);
+                                            || v.PositionY < VisibleBoundsWorldspace.MinY - 100
+                                            || v.Dead);
         }
 
         private CCPoint TranslatePosition(CCPoint startPosition, float playerWidth, MoveDirection direction, int speed)
