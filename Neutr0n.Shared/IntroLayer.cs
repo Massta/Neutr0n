@@ -9,9 +9,12 @@ namespace Neutr0n.Shared
 {
     public class IntroLayer : CCLayerColor
     {
-        public const int MAX_ENEMIES = 20;
+        public const int MAX_ENEMIES = 15;
 
         Box Player;
+        MoveDirection PlayerMoveDirection;
+        int PlayerSpeed;
+
         List<AIBox> Enemies;
 
         public IntroLayer() : base(CCColor4B.Black)
@@ -36,35 +39,170 @@ namespace Neutr0n.Shared
             AddChild(Player);
             Player.Draw();
 
+            PlayerMoveDirection = MoveDirection.MidMid;
+            PlayerSpeed = 5;
+
             Enemies = new List<AIBox>();
 
             // Register for touch events
             var touchListener = new CCEventListenerTouchAllAtOnce();
             touchListener.OnTouchesBegan = OnTouchesBegan;
-            touchListener.OnTouchesMoved = OnTouchesMoved;
+            touchListener.OnTouchesMoved = OnTouchesBegan;
+            touchListener.OnTouchesEnded = OnTouchesEnded;
             AddEventListener(touchListener, this);
             Schedule(RunGameLogic);
+        }
+        void OnTouchesEnded(List<CCTouch> touches, CCEvent touchEvent)
+        {
+            PlayerMoveDirection = MoveDirection.MidMid;
         }
 
         void OnTouchesBegan(List<CCTouch> touches, CCEvent touchEvent)
         {
             if (touches.Count > 0)
             {
-                //paddleSprite.RunAction(new CCMoveTo(.1f, new CCPoint(touches[0].Location.X, paddleSprite.PositionY)));
-            }
-        }
+                #region Touchregion calculation
 
-        void OnTouchesMoved(List<CCTouch> touches, CCEvent touchEvent)
-        {
-            if (touches.Count > 0)
-            {
-                //paddleSprite.PositionX = touches[0].Location.X;
+                float xSize = VisibleBoundsWorldspace.MidX / 3;
+                float ySize = xSize;
+                //Bottom row
+                CCRect bottomLeft = new CCRect
+                {
+                    Origin = new CCPoint(0, 0),
+                    Size = new CCSize(xSize, ySize)
+                };
+                CCRect bottomMid = new CCRect
+                {
+                    Origin = new CCPoint(xSize, 0),
+                    Size = new CCSize(xSize, ySize)
+                };
+                CCRect bottomRight = new CCRect
+                {
+                    Origin = new CCPoint(xSize * 2, 0),
+                    Size = new CCSize(xSize, ySize)
+                };
+                //Middle row
+                CCRect midLeft = new CCRect
+                {
+                    Origin = new CCPoint(0, ySize),
+                    Size = new CCSize(xSize, ySize)
+                };
+                CCRect midMid = new CCRect
+                {
+                    Origin = new CCPoint(xSize, ySize),
+                    Size = new CCSize(xSize, ySize)
+                };
+                CCRect midRight = new CCRect
+                {
+                    Origin = new CCPoint(xSize * 2, ySize),
+                    Size = new CCSize(xSize, ySize)
+                };
+                //Top row
+                CCRect topLeft = new CCRect
+                {
+                    Origin = new CCPoint(0, ySize * 2),
+                    Size = new CCSize(xSize, ySize)
+                };
+                CCRect topMid = new CCRect
+                {
+                    Origin = new CCPoint(xSize, ySize * 2),
+                    Size = new CCSize(xSize, ySize)
+                };
+                CCRect topRight = new CCRect
+                {
+                    Origin = new CCPoint(xSize * 2, ySize * 2),
+                    Size = new CCSize(xSize, ySize)
+                };
+
+                #endregion
+
+                #region Intersection calculation
+
+                //Bottom Row
+                if (bottomLeft.ContainsPoint(touches[0].Location))
+                {
+                    PlayerMoveDirection = MoveDirection.BottomLeft;
+                }
+                if (bottomMid.ContainsPoint(touches[0].Location))
+                {
+                    PlayerMoveDirection = MoveDirection.BottomMid;
+                }
+                if (bottomRight.ContainsPoint(touches[0].Location))
+                {
+                    PlayerMoveDirection = MoveDirection.BottomRight;
+                }
+
+                //Middle Row
+                if (midLeft.ContainsPoint(touches[0].Location))
+                {
+                    PlayerMoveDirection = MoveDirection.MidLeft;
+                }
+                if (midRight.ContainsPoint(touches[0].Location))
+                {
+                    PlayerMoveDirection = MoveDirection.MidRight;
+                }
+
+                //Right Row
+                if (topLeft.ContainsPoint(touches[0].Location))
+                {
+                    PlayerMoveDirection = MoveDirection.TopLeft;
+                }
+                if (topMid.ContainsPoint(touches[0].Location))
+                {
+                    PlayerMoveDirection = MoveDirection.TopMid;
+                }
+                if (topRight.ContainsPoint(touches[0].Location))
+                {
+                    PlayerMoveDirection = MoveDirection.TopRight;
+                }
+
+                #endregion
             }
         }
 
         public void RunGameLogic(float frameTimeInSeconds)
         {
-            if (CCRandom.GetRandomInt(0, 100) < (100-(Enemies.Count*10)))
+            #region Player movement
+
+            switch (PlayerMoveDirection)
+            {
+                case MoveDirection.BottomLeft:
+                    Player.PositionX -= PlayerSpeed;
+                    Player.PositionY -= PlayerSpeed;
+                    break;
+                case MoveDirection.BottomMid:
+                    Player.PositionY -= PlayerSpeed;
+                    break;
+                case MoveDirection.BottomRight:
+                    Player.PositionX += PlayerSpeed;
+                    Player.PositionY -= PlayerSpeed;
+                    break;
+                case MoveDirection.MidLeft:
+                    Player.PositionX -= PlayerSpeed;
+                    break;
+                case MoveDirection.MidMid:
+                    Player.PositionX -= 0;
+                    Player.PositionY -= 0;
+                    break;
+                case MoveDirection.MidRight:
+                    Player.PositionX += PlayerSpeed;
+                    break;
+                case MoveDirection.TopLeft:
+                    Player.PositionX -= PlayerSpeed;
+                    Player.PositionY += PlayerSpeed;
+                    break;
+                case MoveDirection.TopMid:
+                    Player.PositionY += PlayerSpeed;
+                    break;
+                case MoveDirection.TopRight:
+                    Player.PositionX += PlayerSpeed;
+                    Player.PositionY += PlayerSpeed;
+                    break;
+            }
+
+            #endregion
+
+            if (CCRandom.GetRandomInt(0, 100) < (100 - (Enemies.Count * 10)))
             {
                 int newCount = CCRandom.GetRandomInt(Math.Max(1, Player.Counter - 100), Player.Counter + 100);
                 int direction = CCRandom.GetRandomInt(0, 3);
@@ -127,10 +265,10 @@ namespace Neutr0n.Shared
             }
 
             //If enemy is out of bounds, remove it
-            var toRemove = Enemies.Where(v => v.PositionX > VisibleBoundsWorldspace.MaxX+100
-                                            || v.PositionX < VisibleBoundsWorldspace.MinX-100
-                                            || v.PositionY > VisibleBoundsWorldspace.MaxY+100
-                                            || v.PositionY < VisibleBoundsWorldspace.MinY-100);
+            var toRemove = Enemies.Where(v => v.PositionX > VisibleBoundsWorldspace.MaxX + 100
+                                            || v.PositionX < VisibleBoundsWorldspace.MinX - 100
+                                            || v.PositionY > VisibleBoundsWorldspace.MaxY + 100
+                                            || v.PositionY < VisibleBoundsWorldspace.MinY - 100);
             foreach (var removeEnemy in toRemove)
             {
                 RemoveChild(removeEnemy);
