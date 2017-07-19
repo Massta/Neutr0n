@@ -10,6 +10,8 @@ namespace Neutr0n.Shared
     public class IntroLayer : CCLayerColor
     {
         public const int MAX_ENEMIES = 10;
+        public const int MAX_ENEMY_SPEED = 6;
+        public const int MIN_ENEMY_SPEED = 1;
 
         private Box Player;
         private MoveDirection PlayerMoveDirection;
@@ -122,10 +124,13 @@ namespace Neutr0n.Shared
 
             #endregion
 
+            #region Enemy creation
+
             if (CCRandom.GetRandomInt(0, 100) < (100 - (Enemies.Count * 10)))
             {
                 int newCount = CCRandom.GetRandomInt(1, Player.Counter * 10);
                 int direction = CCRandom.GetRandomInt(0, 3);
+                float newSize = 80;
                 float newVelocityX = 0;
                 float newVelocityY = 0;
                 float newPositionX = 0;
@@ -134,39 +139,38 @@ namespace Neutr0n.Shared
                 {
                     case 0:
                         //left to right
-                        newVelocityX = CCRandom.GetRandomInt(1, 6);
+                        newVelocityX = CCRandom.GetRandomInt(MIN_ENEMY_SPEED, MAX_ENEMY_SPEED);
                         newVelocityY = 0;
-                        newPositionX = VisibleBoundsWorldspace.MinX - 80;
+                        newPositionX = VisibleBoundsWorldspace.MinX - newSize;
                         newPositionY = CCRandom.GetRandomFloat(VisibleBoundsWorldspace.MinY, VisibleBoundsWorldspace.MaxY);
                         break;
                     case 1:
                         //top to bottom
                         newVelocityX = 0;
-                        newVelocityY = CCRandom.GetRandomInt(1, 6);
+                        newVelocityY = CCRandom.GetRandomInt(MIN_ENEMY_SPEED, MAX_ENEMY_SPEED);
                         newPositionX = CCRandom.GetRandomFloat(VisibleBoundsWorldspace.MinX, VisibleBoundsWorldspace.MaxX);
-                        newPositionY = VisibleBoundsWorldspace.MinY - 80;
+                        newPositionY = VisibleBoundsWorldspace.MinY - newSize;
                         break;
                     case 2:
                         //right to left
-                        newVelocityX = -CCRandom.GetRandomInt(1, 6);
+                        newVelocityX = -CCRandom.GetRandomInt(MIN_ENEMY_SPEED, MAX_ENEMY_SPEED);
                         newVelocityY = 0;
-                        newPositionX = VisibleBoundsWorldspace.MaxX + 80;
+                        newPositionX = VisibleBoundsWorldspace.MaxX + newSize;
                         newPositionY = CCRandom.GetRandomFloat(VisibleBoundsWorldspace.MinY, VisibleBoundsWorldspace.MaxY);
                         break;
                     case 3:
                         //bottom to top
                         newVelocityX = 0;
-                        newVelocityY = -CCRandom.GetRandomInt(1, 6);
+                        newVelocityY = -CCRandom.GetRandomInt(MIN_ENEMY_SPEED, MAX_ENEMY_SPEED);
                         newPositionX = CCRandom.GetRandomFloat(VisibleBoundsWorldspace.MinX, VisibleBoundsWorldspace.MaxX);
-                        newPositionY = VisibleBoundsWorldspace.MaxY + 80;
+                        newPositionY = VisibleBoundsWorldspace.MaxY + newSize;
                         break;
                 }
-                float newSize = Math.Max(1, newCount - Player.Counter);
                 AIBox newEnemy = new AIBox
                 {
                     Counter = newCount,
-                    Width = 80,
-                    Height = 80,
+                    Width = newSize,
+                    Height = newSize,
                     BoxColor = CCColor4B.Red,
                     PositionX = newPositionX,
                     PositionY = newPositionY,
@@ -177,6 +181,11 @@ namespace Neutr0n.Shared
                 AddChild(newEnemy);
                 newEnemy.Draw();
             }
+
+            #endregion
+
+            #region Enemy Movement and collision
+
             foreach (AIBox enemy in Enemies)
             {
                 //Move enemy
@@ -199,6 +208,10 @@ namespace Neutr0n.Shared
                 }
             }
 
+            #endregion
+
+            #region Enemy removal
+
             //If enemy is out of bounds, remove it
             var toRemove = Enemies.Where(v => v.PositionX > VisibleBoundsWorldspace.MaxX + 100
                                             || v.PositionX < VisibleBoundsWorldspace.MinX - 100
@@ -214,6 +227,8 @@ namespace Neutr0n.Shared
                                             || v.PositionY > VisibleBoundsWorldspace.MaxY + 100
                                             || v.PositionY < VisibleBoundsWorldspace.MinY - 100
                                             || v.Dead);
+
+            #endregion
         }
 
         private CCPoint TranslatePosition(CCPoint startPosition, float playerWidth, MoveDirection direction, int speed)
