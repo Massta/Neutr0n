@@ -10,11 +10,13 @@ namespace Neutr0n.Shared
     public class IntroLayer : CCLayerColor
     {
         public const int MAX_ENEMIES = 10;
+        public const int MAX_PLAYER_SPEED = 7;
         public const int MAX_ENEMY_SPEED = 6;
         public const int MIN_ENEMY_SPEED = 1;
 
         private Box Player;
-        private MoveDirection PlayerMoveDirection;
+        private float PlayerHorizontalSpeed;
+        private float PlayerVerticalSpeed;
         private CCPoint TouchPoint;
         private int PlayerSpeed;
         private bool PlayerIsMoving;
@@ -29,7 +31,8 @@ namespace Neutr0n.Shared
         {
             base.AddedToScene();
 
-            // Use the bounds to layout the positioning of our drawable assets
+            #region Object initialization
+
             var bounds = VisibleBoundsWorldspace;
 
             Player = new Box
@@ -44,7 +47,8 @@ namespace Neutr0n.Shared
             AddChild(Player);
             Player.Draw();
 
-            PlayerMoveDirection = MoveDirection.MidMid;
+            PlayerHorizontalSpeed = 0;
+            PlayerVerticalSpeed = 0;
             PlayerSpeed = 4;
             PlayerIsMoving = false;
 
@@ -52,12 +56,19 @@ namespace Neutr0n.Shared
 
             TouchPoint = new CCPoint();
 
+            #endregion
+
+            #region Touch events
+
             // Register for touch events
             var touchListener = new CCEventListenerTouchAllAtOnce();
             touchListener.OnTouchesBegan = OnTouchesBegan;
             touchListener.OnTouchesMoved = OnTouchesMoved;
             touchListener.OnTouchesEnded = OnTouchesEnded;
             AddEventListener(touchListener, this);
+
+            #endregion
+
             Schedule(RunGameLogic);
         }
 
@@ -80,29 +91,14 @@ namespace Neutr0n.Shared
                 CCPoint newTouchPoint = touches[0].Location;
 
                 CCPoint relativeTouchPoint = TouchPoint - newTouchPoint;
-                bool movesHorizontally = Math.Abs(relativeTouchPoint.X) - Math.Abs(relativeTouchPoint.Y) > 0;
 
                 #region Intersection calculation
 
-                if (relativeTouchPoint.X > 0 && movesHorizontally)
+                if (relativeTouchPoint.X != 0 && relativeTouchPoint.Y != 0)
                 {
-                    PlayerMoveDirection = MoveDirection.MidLeft;
                     PlayerIsMoving = true;
-                }
-                if (relativeTouchPoint.X < 0 && movesHorizontally)
-                {
-                    PlayerMoveDirection = MoveDirection.MidRight;
-                    PlayerIsMoving = true;
-                }
-                if (relativeTouchPoint.Y > 0 && !movesHorizontally)
-                {
-                    PlayerMoveDirection = MoveDirection.BottomMid;
-                    PlayerIsMoving = true;
-                }
-                if (relativeTouchPoint.Y < 0 && !movesHorizontally)
-                {
-                    PlayerMoveDirection = MoveDirection.TopMid;
-                    PlayerIsMoving = true;
+                    PlayerHorizontalSpeed = (float)(-relativeTouchPoint.X / (Math.Sqrt(Math.Pow(relativeTouchPoint.X, 2) + Math.Pow(relativeTouchPoint.Y, 2))));
+                    PlayerVerticalSpeed = (float)(-relativeTouchPoint.Y / (Math.Sqrt(Math.Pow(relativeTouchPoint.X, 2) + Math.Pow(relativeTouchPoint.Y, 2))));
                 }
 
                 #endregion
@@ -110,7 +106,8 @@ namespace Neutr0n.Shared
         }
         void OnTouchesEnded(List<CCTouch> touches, CCEvent touchEvent)
         {
-            PlayerMoveDirection = MoveDirection.MidMid;
+            PlayerHorizontalSpeed = 0;
+            PlayerVerticalSpeed = 0;
             PlayerIsMoving = false;
         }
 
@@ -119,7 +116,7 @@ namespace Neutr0n.Shared
             #region Player movement
             if (PlayerIsMoving)
             {
-                Player.Position = TranslatePosition(Player.Position, Player.Width, PlayerMoveDirection, PlayerSpeed);
+                Player.Position = TranslatePosition(Player.Position, PlayerHorizontalSpeed, PlayerVerticalSpeed, PlayerSpeed);
             }
 
             #endregion
@@ -231,82 +228,12 @@ namespace Neutr0n.Shared
             #endregion
         }
 
-        private CCPoint TranslatePosition(CCPoint startPosition, float playerWidth, MoveDirection direction, int speed)
+        private CCPoint TranslatePosition(CCPoint startPosition, float horizontalSpeed, float verticalSpeed, int speed)
         {
-            switch (direction)
-            {
-                case MoveDirection.BottomLeft:
-                    if (startPosition.X >= VisibleBoundsWorldspace.MinX)
-                    {
-                        startPosition.X -= speed;
-                    }
-                    if (startPosition.Y >= VisibleBoundsWorldspace.MinY)
-                    {
-                        startPosition.Y -= speed;
-                    }
-                    break;
-                case MoveDirection.BottomMid:
-                    if (startPosition.Y >= VisibleBoundsWorldspace.MinY)
-                    {
-                        startPosition.Y -= speed;
-                    }
-                    break;
-                case MoveDirection.BottomRight:
-                    if (startPosition.X + playerWidth <= VisibleBoundsWorldspace.MaxX)
-                    {
-                        startPosition.X += speed;
-                    }
-                    if (startPosition.Y >= VisibleBoundsWorldspace.MinY)
-                    {
-                        startPosition.Y -= speed;
-                    }
-                    break;
-                case MoveDirection.MidLeft:
-                    if (startPosition.X >= VisibleBoundsWorldspace.MinX)
-                    {
-                        startPosition.X -= speed;
-                    }
-                    break;
-                case MoveDirection.MidMid:
-                    startPosition.X -= 0;
-                    startPosition.Y -= 0;
-                    break;
-                case MoveDirection.MidRight:
-                    if (startPosition.X + playerWidth <= VisibleBoundsWorldspace.MaxX)
-                    {
-                        startPosition.X += speed;
-                    }
-                    break;
-                case MoveDirection.TopLeft:
-                    if (startPosition.X >= VisibleBoundsWorldspace.MinX)
-                    {
-                        startPosition.X -= speed;
-                    }
-                    if (startPosition.Y + playerWidth <= VisibleBoundsWorldspace.MaxY)
-                    {
-                        startPosition.Y += speed;
-                    }
-                    break;
-                case MoveDirection.TopMid:
-                    if (startPosition.Y + playerWidth <= VisibleBoundsWorldspace.MaxY)
-                    {
-                        startPosition.Y += speed;
-                    }
-                    break;
-                case MoveDirection.TopRight:
-                    if (startPosition.X + playerWidth <= VisibleBoundsWorldspace.MaxX)
-                    {
-                        startPosition.X += speed;
-                    }
-                    if (startPosition.Y + playerWidth <= VisibleBoundsWorldspace.MaxY)
-                    {
-                        startPosition.Y += speed;
-                    }
-                    break;
-            }
+            startPosition.X += horizontalSpeed * speed;
+            startPosition.Y += verticalSpeed * speed;
 
             return startPosition;
         }
     }
 }
-
