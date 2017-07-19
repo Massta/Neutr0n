@@ -11,10 +11,11 @@ namespace Neutr0n.Shared
     {
         public const int MAX_ENEMIES = 10;
 
-        Box Player;
-        MoveDirection PlayerMoveDirection;
-        int PlayerSpeed;
-        bool PlayerIsMoving;
+        private Box Player;
+        private MoveDirection PlayerMoveDirection;
+        private CCPoint TouchPoint;
+        private int PlayerSpeed;
+        private bool PlayerIsMoving;
 
         List<AIBox> Enemies;
 
@@ -47,132 +48,68 @@ namespace Neutr0n.Shared
 
             Enemies = new List<AIBox>();
 
+            TouchPoint = new CCPoint();
+
             // Register for touch events
             var touchListener = new CCEventListenerTouchAllAtOnce();
             touchListener.OnTouchesBegan = OnTouchesBegan;
-            touchListener.OnTouchesMoved = OnTouchesBegan;
+            touchListener.OnTouchesMoved = OnTouchesMoved;
             touchListener.OnTouchesEnded = OnTouchesEnded;
             AddEventListener(touchListener, this);
             Schedule(RunGameLogic);
-        }
-        void OnTouchesEnded(List<CCTouch> touches, CCEvent touchEvent)
-        {
-            PlayerMoveDirection = MoveDirection.MidMid;
-            PlayerIsMoving = false;
         }
 
         void OnTouchesBegan(List<CCTouch> touches, CCEvent touchEvent)
         {
             if (touches.Count > 0)
             {
-                bool touchesAnything = false;
                 #region Touchregion calculation
 
-                float xSize = 80; //VisibleBoundsWorldspace.MidX / 3;
-                float ySize = xSize;
-                //Bottom row
-                CCRect bottomLeft = new CCRect
-                {
-                    Origin = new CCPoint(0, 0),
-                    Size = new CCSize(xSize, ySize)
-                };
-                CCRect bottomMid = new CCRect
-                {
-                    Origin = new CCPoint(xSize, 0),
-                    Size = new CCSize(xSize, ySize)
-                };
-                CCRect bottomRight = new CCRect
-                {
-                    Origin = new CCPoint(xSize * 2, 0),
-                    Size = new CCSize(xSize, ySize)
-                };
-                //Middle row
-                CCRect midLeft = new CCRect
-                {
-                    Origin = new CCPoint(0, ySize),
-                    Size = new CCSize(xSize, ySize)
-                };
-                CCRect midMid = new CCRect
-                {
-                    Origin = new CCPoint(xSize, ySize),
-                    Size = new CCSize(xSize, ySize)
-                };
-                CCRect midRight = new CCRect
-                {
-                    Origin = new CCPoint(xSize * 2, ySize),
-                    Size = new CCSize(xSize, ySize)
-                };
-                //Top row
-                CCRect topLeft = new CCRect
-                {
-                    Origin = new CCPoint(0, ySize * 2),
-                    Size = new CCSize(xSize, ySize)
-                };
-                CCRect topMid = new CCRect
-                {
-                    Origin = new CCPoint(xSize, ySize * 2),
-                    Size = new CCSize(xSize, ySize)
-                };
-                CCRect topRight = new CCRect
-                {
-                    Origin = new CCPoint(xSize * 2, ySize * 2),
-                    Size = new CCSize(xSize, ySize)
-                };
-
-                #endregion
-
-                #region Intersection calculation
-
-                //Bottom Row
-                if (bottomLeft.ContainsPoint(touches[0].Location))
-                {
-                    PlayerMoveDirection = MoveDirection.BottomLeft;
-                    touchesAnything = true;
-                }
-                if (bottomMid.ContainsPoint(touches[0].Location))
-                {
-                    PlayerMoveDirection = MoveDirection.BottomMid;
-                    touchesAnything = true;
-                }
-                if (bottomRight.ContainsPoint(touches[0].Location))
-                {
-                    PlayerMoveDirection = MoveDirection.BottomRight;
-                    touchesAnything = true;
-                }
-
-                //Middle Row
-                if (midLeft.ContainsPoint(touches[0].Location))
-                {
-                    PlayerMoveDirection = MoveDirection.MidLeft;
-                    touchesAnything = true;
-                }
-                if (midRight.ContainsPoint(touches[0].Location))
-                {
-                    PlayerMoveDirection = MoveDirection.MidRight;
-                    touchesAnything = true;
-                }
-
-                //Right Row
-                if (topLeft.ContainsPoint(touches[0].Location))
-                {
-                    PlayerMoveDirection = MoveDirection.TopLeft;
-                    touchesAnything = true;
-                }
-                if (topMid.ContainsPoint(touches[0].Location))
-                {
-                    PlayerMoveDirection = MoveDirection.TopMid;
-                    touchesAnything = true;
-                }
-                if (topRight.ContainsPoint(touches[0].Location))
-                {
-                    PlayerMoveDirection = MoveDirection.TopRight;
-                    touchesAnything = true;
-                }
-
-                PlayerIsMoving = touchesAnything;
+                TouchPoint = touches[0].Location;
 
                 #endregion
             }
+        }
+
+        void OnTouchesMoved(List<CCTouch> touches, CCEvent touchEvent)
+        {
+            if (touches.Count > 0)
+            {
+                CCPoint newTouchPoint = touches[0].Location;
+
+                CCPoint relativeTouchPoint = TouchPoint - newTouchPoint;
+                bool movesHorizontally = Math.Abs(relativeTouchPoint.X) - Math.Abs(relativeTouchPoint.Y) > 0;
+
+                #region Intersection calculation
+
+                if (relativeTouchPoint.X > 0 && movesHorizontally)
+                {
+                    PlayerMoveDirection = MoveDirection.MidLeft;
+                    PlayerIsMoving = true;
+                }
+                if (relativeTouchPoint.X < 0 && movesHorizontally)
+                {
+                    PlayerMoveDirection = MoveDirection.MidRight;
+                    PlayerIsMoving = true;
+                }
+                if (relativeTouchPoint.Y > 0 && !movesHorizontally)
+                {
+                    PlayerMoveDirection = MoveDirection.BottomMid;
+                    PlayerIsMoving = true;
+                }
+                if (relativeTouchPoint.Y < 0 && !movesHorizontally)
+                {
+                    PlayerMoveDirection = MoveDirection.TopMid;
+                    PlayerIsMoving = true;
+                }
+
+                #endregion
+            }
+        }
+        void OnTouchesEnded(List<CCTouch> touches, CCEvent touchEvent)
+        {
+            PlayerMoveDirection = MoveDirection.MidMid;
+            PlayerIsMoving = false;
         }
 
         public void RunGameLogic(float frameTimeInSeconds)
@@ -187,7 +124,7 @@ namespace Neutr0n.Shared
 
             if (CCRandom.GetRandomInt(0, 100) < (100 - (Enemies.Count * 10)))
             {
-                int newCount = CCRandom.GetRandomInt(1, Player.Counter*10);
+                int newCount = CCRandom.GetRandomInt(1, Player.Counter * 10);
                 int direction = CCRandom.GetRandomInt(0, 3);
                 float newVelocityX = 0;
                 float newVelocityY = 0;
@@ -224,6 +161,7 @@ namespace Neutr0n.Shared
                         newPositionY = VisibleBoundsWorldspace.MaxY + 80;
                         break;
                 }
+                float newSize = Math.Max(1, newCount - Player.Counter);
                 AIBox newEnemy = new AIBox
                 {
                     Counter = newCount,
@@ -247,7 +185,7 @@ namespace Neutr0n.Shared
                 //If enemy hits box, start collision event
                 if (Player.BoundingBox.IntersectsRect(enemy.BoundingBox))
                 {
-                    if(Player.Counter >= enemy.Counter)
+                    if (Player.Counter >= enemy.Counter)
                     {
                         //Eats enemy
                         Player.Counter += enemy.Counter;
@@ -299,7 +237,7 @@ namespace Neutr0n.Shared
                     }
                     break;
                 case MoveDirection.BottomRight:
-                    if (startPosition.X+playerWidth <= VisibleBoundsWorldspace.MaxX)
+                    if (startPosition.X + playerWidth <= VisibleBoundsWorldspace.MaxX)
                     {
                         startPosition.X += speed;
                     }
