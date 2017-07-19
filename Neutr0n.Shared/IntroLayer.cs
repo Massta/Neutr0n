@@ -187,7 +187,7 @@ namespace Neutr0n.Shared
 
             if (CCRandom.GetRandomInt(0, 100) < (100 - (Enemies.Count * 10)))
             {
-                int newCount = CCRandom.GetRandomInt(Math.Max(1, Player.Counter - 100), Player.Counter + 10);
+                int newCount = CCRandom.GetRandomInt(1, Player.Counter*10);
                 int direction = CCRandom.GetRandomInt(0, 3);
                 float newVelocityX = 0;
                 float newVelocityY = 0;

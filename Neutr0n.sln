@@ -7,22 +7,39 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Neutr0n.Shared", "Neutr0n.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neutr0n.Android", "Neutr0n.Android\Neutr0n.Android.csproj", "{E3BA8186-FE45-494A-BD79-8673A361857A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neutron.Windows", "Neutron.Windows\Neutron.Windows.csproj", "{C2AA92EF-1C66-4100-B17B-613EA7CB7BCC}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Neutr0n.Shared\Neutr0n.Shared.projitems*{a070285b-a845-48ce-a3dd-55c9e2a912c3}*SharedItemsImports = 13
+		Neutr0n.Shared\Neutr0n.Shared.projitems*{c2aa92ef-1c66-4100-b17b-613ea7cb7bcc}*SharedItemsImports = 4
 		Neutr0n.Shared\Neutr0n.Shared.projitems*{e3ba8186-fe45-494a-bd79-8673a361857a}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E3BA8186-FE45-494A-BD79-8673A361857A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E3BA8186-FE45-494A-BD79-8673A361857A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3BA8186-FE45-494A-BD79-8673A361857A}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{E3BA8186-FE45-494A-BD79-8673A361857A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E3BA8186-FE45-494A-BD79-8673A361857A}.Debug|x86.Build.0 = Debug|Any CPU
+		{E3BA8186-FE45-494A-BD79-8673A361857A}.Debug|x86.Deploy.0 = Debug|Any CPU
 		{E3BA8186-FE45-494A-BD79-8673A361857A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3BA8186-FE45-494A-BD79-8673A361857A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E3BA8186-FE45-494A-BD79-8673A361857A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{E3BA8186-FE45-494A-BD79-8673A361857A}.Release|x86.ActiveCfg = Release|Any CPU
+		{E3BA8186-FE45-494A-BD79-8673A361857A}.Release|x86.Build.0 = Release|Any CPU
+		{E3BA8186-FE45-494A-BD79-8673A361857A}.Release|x86.Deploy.0 = Release|Any CPU
+		{C2AA92EF-1C66-4100-B17B-613EA7CB7BCC}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{C2AA92EF-1C66-4100-B17B-613EA7CB7BCC}.Debug|x86.ActiveCfg = Debug|x86
+		{C2AA92EF-1C66-4100-B17B-613EA7CB7BCC}.Debug|x86.Build.0 = Debug|x86
+		{C2AA92EF-1C66-4100-B17B-613EA7CB7BCC}.Release|Any CPU.ActiveCfg = Release|x86
+		{C2AA92EF-1C66-4100-B17B-613EA7CB7BCC}.Release|x86.ActiveCfg = Release|x86
+		{C2AA92EF-1C66-4100-B17B-613EA7CB7BCC}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
